@@ -3,6 +3,8 @@ package api
 import (
 	"database/sql"
 	"fmt"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -14,9 +16,10 @@ const (
 
 func ConnectToDatabase() error {
 	connString := fmt.Sprintf("host=%s dbname=%s user=%s password=%s", DbServer, DbName, DbUserName, DbPassword)
-	_, err := sql.Open("postgres", connString)
+	db, err := sql.Open("postgres", connString)
 	if err != nil {
 		return err
 	}
+	db.Exec("")
 	return nil
 }
