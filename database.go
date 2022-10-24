@@ -20,6 +20,6 @@ func ConnectToDatabase() error {
 	if err != nil {
 		return err
 	}
-	db.Exec("")
+	db.Exec("INSERT INTO users(id, firstName, lastName) VALUES (2, 'paul', 'quique');")
 	return nil
 }
