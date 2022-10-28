@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -20,6 +21,11 @@ func ConnectToDatabase() error {
 	if err != nil {
 		return err
 	}
-	db.Exec("INSERT INTO users(id, firstName, lastName) VALUES (2, 'paul', 'quique');")
+	c, err := os.ReadFile("./sql/create_db.sql")
+	if err != nil {
+		return err
+	}
+
+	db.Exec(string(c))
 	return nil
 }
