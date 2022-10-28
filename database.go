@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	_ "github.com/lib/pq"
 )
@@ -21,11 +22,14 @@ func ConnectToDatabase() error {
 	if err != nil {
 		return err
 	}
-	c, err := os.ReadFile("./sql/create_db.sql")
+	p, err := filepath.Abs("./sql/create_db.sql")
 	if err != nil {
 		return err
 	}
-
+	c, err := os.ReadFile(p)
+	if err != nil {
+		return err
+	}
 	db.Exec(string(c))
 	return nil
 }
