@@ -8,10 +8,10 @@ const (
 )
 
 type Product struct {
-	Id         int    `json:"id"`
-	Name       string `json:"name"`
-	CategoryId int    `json:"categoryId"`
-	Price      int    `json:"price"`
+	Id         int    `json:"id" db:"id"`
+	Name       string `json:"name" db:"name"`
+	CategoryId int    `json:"categoryId" db:"category_id"`
+	Price      int    `json:"price" db:"price"`
 }
 
 func Validate(p *Product) error {

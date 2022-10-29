@@ -5,10 +5,10 @@ import (
 )
 
 type Offer struct {
-	Id         int       `json:"id"`
-	BorrowerId int       `json:"borrowerId"`
-	LenderId   int       `json:"lenderId"`
-	ProductId  int       `json:"productId"`
-	CreatedAt  time.Time `json:"createdAt"`
-	ExpiresAt  time.Time `json:"expiresAt"`
+	Id         int       `json:"id" db:"id"`
+	BorrowerId int       `json:"borrowerId" db:"borrower_id"`
+	LenderId   int       `json:"lenderId" db:"lender_id"`
+	ProductId  int       `json:"productId" db:"product_id"`
+	CreatedAt  time.Time `json:"createdAt" db:"created_at"`
+	ExpiresAt  time.Time `json:"expiresAt" db:"expires_at"`
 }

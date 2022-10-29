@@ -1,10 +1,9 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
-	"os"
-	"path/filepath"
+
+	"github.com/jmoiron/sqlx"
 
 	_ "github.com/lib/pq"
 )
@@ -18,18 +17,15 @@ const (
 
 func ConnectToDatabase() error {
 	connString := fmt.Sprintf("host=%s dbname=%s user=%s password=%s", DbServer, DbName, DbUserName, DbPassword)
-	db, err := sql.Open("postgres", connString)
+	db, err := sqlx.Open("postgres", connString)
 	if err != nil {
 		return err
 	}
-	p, err := filepath.Abs("./sql/create_db.sql")
+	users := []User{}
 	if err != nil {
 		return err
 	}
-	c, err := os.ReadFile(p)
-	if err != nil {
-		return err
-	}
-	db.Exec(string(c))
+	db.Select(&users, "SELECT * FROM user_info;")
+	fmt.Println(users)
 	return nil
 }
