@@ -4,7 +4,7 @@ CREATE TABLE user_info (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(45) NOT NULL,
     last_name VARCHAR(45) NOT NULL,
-    email VARCHAR(75) NOT NULL,
+    email VARCHAR(75) UNIQUE NOT NULL,
     salted_hash VARCHAR(100) NOT NULL,
     points INT NOT NULL,
     created_at TIMESTAMP NOT NULL
@@ -33,4 +33,11 @@ CREATE TABLE offer (
     FOREIGN KEY (borrower_id) REFERENCES user_info (id),
     FOREIGN KEY (lender_id) REFERENCES user_info (id),
     FOREIGN KEY (product_id) REFERENCES product (id)
+);
+
+CREATE TABLE session (
+    id VARCHAR(100) PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user_info (id)
 );
