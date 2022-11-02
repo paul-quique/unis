@@ -22,11 +22,13 @@ func init() {
 }
 
 func ConnectToDatabase() (*sqlx.DB, error) {
+	host, dbname, user, password := os.Getenv("DB_SERVER"), os.Getenv("DB_NAME"), os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD")
 	connString := fmt.Sprintf("host=%s dbname=%s user=%s password=%s",
-		os.Getenv("DB_SERVER"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_USERNAME"),
-		os.Getenv("DB_PASSWORD"))
+		host,
+		dbname,
+		user,
+		password)
+	fmt.Println(host, dbname, user, password)
 	db, err := sqlx.Open("postgres", connString)
 	if err != nil {
 		return nil, err
