@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -58,7 +57,6 @@ func Auth(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(l)
 	u, err := LoadUserFromEmail(APIDatabase, l.Email)
 	//vérifier que l'email est bien attribuée à un utilisateur
 	if err != nil {
