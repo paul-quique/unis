@@ -1,10 +1,13 @@
 package api
 
 import (
+	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -22,7 +25,7 @@ func NewSessionFromUser(u *User) *Session {
 	return &Session{
 		Id:        uuid.New().String(),
 		UserId:    u.Id,
-		ExpiresAt: time.Now().Add(60 * time.Minute),
+		ExpiresAt: time.Now().Add(60 * time.Second),
 	}
 }
 
@@ -38,4 +41,41 @@ func LoadUserFromSessionId(id string, db *sqlx.DB) (*User, error) {
 func (s *Session) CreateInDB(db *sqlx.DB) error {
 	_, err := db.NamedExec(INSERT_SESSION, s)
 	return err
+}
+
+func Login(c *gin.Context) {
+	email := c.Param("email")
+	password := c.Param("password")
+	//vérifier que les paramètres ne sont pas nuls
+	if !(len(email) > 0 && len(password) > 0) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request, please provide valid email and password",
+		})
+		return
+	}
+	u, err := LoadUserFromEmail(APIDatabase, email)
+	//vérifier que l'email est bien attribuée à un utilisateur
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "cannot find user with provided credentials, please try again",
+		})
+		return
+	}
+	//Vérifier que le mot de passe est correct
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "cannot find user with provided credentials, please try again",
+		})
+		return
+	}
+	s := NewSessionFromUser(u)
+	//vérifier que la session a bien été stockée dans la bdd
+	if err = s.CreateInDB(APIDatabase); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "error has occured while creating session, please try again later",
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, s)
 }

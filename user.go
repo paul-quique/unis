@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	GET_USER_BY_ID = "SELECT * FROM user_info WHERE id=$1;"
-	INSERT_USER    = "INSERT INTO user_info (first_name, last_name, email, salted_hash, points, created_at) VALUES (:first_name, :last_name, :email, :salted_hash, :points, :created_at);"
+	GET_USER_BY_ID    = "SELECT * FROM user_info WHERE id=$1;"
+	GET_USER_BY_EMAIL = "SELECT * FROM user_info WHERE email=$1;"
+	INSERT_USER       = "INSERT INTO user_info (first_name, last_name, email, salted_hash, points, created_at) VALUES (:first_name, :last_name, :email, :salted_hash, :points, :created_at);"
 )
 
 type User struct {
@@ -32,6 +33,15 @@ func (u *User) CreateInDB(db *sqlx.DB) error {
 func LoadUserFromId(db *sqlx.DB, id int) (*User, error) {
 	u := &User{}
 	err := db.Get(u, GET_USER_BY_ID, id)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func LoadUserFromEmail(db *sqlx.DB, email string) (*User, error) {
+	u := &User{}
+	err := db.Get(u, GET_USER_BY_EMAIL, email)
 	if err != nil {
 		return nil, err
 	}

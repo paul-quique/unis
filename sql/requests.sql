@@ -18,3 +18,6 @@ INSERT INTO product (name, category_id, price) VALUES (:name, :category_id, :pri
 
 --Récupérer un utilisateur à partir de son identifiant
 SELECT * FROM user_info WHERE id=$1;
+
+--Récupérer un utilisateur à partir de son email
+SELECT * FROM user_info WHERE email=$1;
