@@ -35,7 +35,7 @@ func LoadCategoryFromId(db *sqlx.DB, id int) (*Category, error) {
 
 func LoadCategories(db *sqlx.DB) ([]*Category, error) {
 	c := []*Category{}
-	err := db.Get(c, GET_CATEGORIES)
+	err := db.Select(c, GET_CATEGORIES)
 	if err != nil {
 		return nil, err
 	}
