@@ -77,7 +77,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusFound, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"id":        u.Id,
 		"firstName": u.FirstName,
 		"lastName":  u.LastName,
