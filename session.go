@@ -21,6 +21,11 @@ type Session struct {
 	ExpiresAt time.Time `json:"expiresAt" db:"expires_at"`
 }
 
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func NewSessionFromUser(u *User) *Session {
 	return &Session{
 		Id:        uuid.New().String(),
@@ -44,16 +49,15 @@ func (s *Session) CreateInDB(db *sqlx.DB) error {
 }
 
 func Login(c *gin.Context) {
-	email := c.Param("email")
-	password := c.Param("password")
-	//vérifier que les paramètres ne sont pas nuls
-	if !(len(email) > 0 && len(password) > 0) {
+	l := &LoginRequest{}
+	//vérifier que les identifiants sont présents
+	if err := c.ShouldBind(l); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid request, please provide valid email and password",
 		})
 		return
 	}
-	u, err := LoadUserFromEmail(APIDatabase, email)
+	u, err := LoadUserFromEmail(APIDatabase, l.Email)
 	//vérifier que l'email est bien attribuée à un utilisateur
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -62,7 +66,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	//Vérifier que le mot de passe est correct
-	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(l.Password))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "cannot find user with provided credentials, please try again",
