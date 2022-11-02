@@ -24,3 +24,6 @@ SELECT * FROM user_info WHERE email=$1;
 
 --Récupérer une catégorie à partir de son id
 SELECT * FROM category WHERE id=$1;
+
+--Récupérer l'ensemble des catégories
+SELECT * FROM category;
