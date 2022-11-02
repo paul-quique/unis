@@ -69,7 +69,7 @@ func Auth(c *gin.Context) {
 	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(l.Password))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": "cannot find user with provided credentials, please try again",
+			"error": "incorrect email or password, please try again",
 		})
 		return
 	}
