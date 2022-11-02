@@ -52,7 +52,7 @@ func (s *Session) CreateInDB(db *sqlx.DB) error {
 func Auth(c *gin.Context) {
 	l := &LoginRequest{}
 	//vérifier que les identifiants sont présents
-	if err := c.ShouldBind(l); err != nil {
+	if err := c.BindJSON(l); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid request, please provide valid email and password",
 		})
