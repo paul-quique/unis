@@ -48,7 +48,7 @@ func (s *Session) CreateInDB(db *sqlx.DB) error {
 	return err
 }
 
-func Login(c *gin.Context) {
+func Auth(c *gin.Context) {
 	l := &LoginRequest{}
 	//vérifier que les identifiants sont présents
 	if err := c.ShouldBind(l); err != nil {
