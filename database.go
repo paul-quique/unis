@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jmoiron/sqlx"
@@ -17,7 +18,7 @@ func init() {
 	var err error
 	APIDatabase, err = ConnectToDatabase()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 }
 
@@ -28,7 +29,6 @@ func ConnectToDatabase() (*sqlx.DB, error) {
 		dbname,
 		user,
 		password)
-	fmt.Println(host, dbname, user, password)
 	db, err := sqlx.Open("postgres", connString)
 	if err != nil {
 		return nil, err
