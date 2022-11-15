@@ -1,25 +1,37 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
+	"log"
+	"os"
+
+	"github.com/jmoiron/sqlx"
 
 	_ "github.com/lib/pq"
 )
 
-const (
-	DbServer   = "tai.db.elephantsql.com"
-	DbName     = "iuraljbb"
-	DbUserName = "iuraljbb"
-	DbPassword = "rncIyPl3pYQMTJlPQLDEiRgBP0BioWGR"
+var (
+	APIDatabase *sqlx.DB
 )
 
-func ConnectToDatabase() error {
-	connString := fmt.Sprintf("host=%s dbname=%s user=%s password=%s", DbServer, DbName, DbUserName, DbPassword)
-	db, err := sql.Open("postgres", connString)
+func init() {
+	var err error
+	APIDatabase, err = ConnectToDatabase()
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
-	db.Exec("INSERT INTO users(id, firstName, lastName) VALUES (2, 'paul', 'quique');")
-	return nil
+}
+
+func ConnectToDatabase() (*sqlx.DB, error) {
+	host, dbname, user, password := os.Getenv("DB_SERVER"), os.Getenv("DB_NAME"), os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD")
+	connString := fmt.Sprintf("host=%s dbname=%s user=%s password=%s",
+		host,
+		dbname,
+		user,
+		password)
+	db, err := sqlx.Open("postgres", connString)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }

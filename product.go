@@ -1,29 +1,22 @@
 package api
 
-import "fmt"
+import "github.com/jmoiron/sqlx"
 
 const (
 	MaxProductNameLength = 45
 	MinProductNameLength = 2
+	INSERT_PRODUCT       = "INSERT INTO product (name, category_id, price) VALUES (:name, :category_id, :price);"
 )
 
 type Product struct {
-	Id         int    `json:"id"`
-	Name       string `json:"name"`
-	CategoryId int    `json:"categoryId"`
-	Price      int    `json:"price"`
+	Id         int    `json:"id" db:"id"`
+	Name       string `json:"name" db:"name"`
+	CategoryId int    `json:"categoryId" db:"category_id"`
+	Price      int    `json:"price" db:"price"`
+	UserId     int    `json:"userId" db:"user_id"`
 }
 
-func Validate(p *Product) error {
-	if p.Price <= 0 {
-		return fmt.Errorf("the price must be positive, price: %d", p.Price)
-	}
-	l := len([]rune(p.Name))
-	if l > MaxProductNameLength {
-		return fmt.Errorf("the name shouldn't be longer than %d, name length: %d", MaxProductNameLength, l)
-	}
-	if l < MinProductNameLength {
-		return fmt.Errorf("the name shouldn't be shorter than %d, name length: %d", MinProductNameLength, l)
-	}
-	return nil
+func (p *Product) CreateInDB(db *sqlx.DB) error {
+	_, err := db.NamedExec(INSERT_PRODUCT, p)
+	return err
 }
