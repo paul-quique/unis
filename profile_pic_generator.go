@@ -29,6 +29,7 @@ func GenerateProfilePicture(c *gin.Context) {
 		panic(err)
 	}
 }
+
 func Uint8n(n int) uint8 {
 	return uint8(rand.Intn(n))
 }
