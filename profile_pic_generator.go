@@ -23,12 +23,11 @@ func RandomImage() *image.RGBA {
 	return i
 }
 
-func GenerateProfilePicture(c *gin.Context) error {
+func GenerateProfilePicture(c *gin.Context) {
 	err := png.Encode(c.Writer, RandomImage())
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return nil
 }
 func Uint8n(n int) uint8 {
 	return uint8(rand.Intn(n))
