@@ -13,6 +13,7 @@ type Product struct {
 	Name       string `json:"name" db:"name"`
 	CategoryId int    `json:"categoryId" db:"category_id"`
 	Price      int    `json:"price" db:"price"`
+	UserId     int    `json:"userId" db:"user_id"`
 }
 
 func (p *Product) CreateInDB(db *sqlx.DB) error {

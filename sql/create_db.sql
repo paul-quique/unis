@@ -18,9 +18,11 @@ CREATE TABLE category (
 CREATE TABLE product (
     id SERIAL PRIMARY KEY,
     name VARCHAR(45) NOT NULL,
+    user_id INT NOT NULL,
     category_id INTEGER NOT NULL,
     price INTEGER NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES category (id)
+    FOREIGN KEY (category_id) REFERENCES category (id),
+    FOREIGN KEY (user_id) REFERENCES user_info (id)
 );
 
 CREATE TABLE offer (
