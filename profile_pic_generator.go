@@ -38,7 +38,7 @@ func GenerateProfilePicture(c *gin.Context) {
 	draw.Draw(img, eyebrows.Bounds(), eyebrows, image.Point{0, 0}, draw.Src)
 	err := png.Encode(c.Writer, RandomImage())
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	fmt.Println("entrée fonction")
 }
@@ -50,12 +50,12 @@ func Uint8n(n int) uint8 {
 func LoadImage(filename string) image.Image {
 	f, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	defer f.Close()
 	image, err := png.Decode(f)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	return image
 }
