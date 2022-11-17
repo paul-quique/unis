@@ -32,9 +32,9 @@ func GenerateProfilePicture(c *gin.Context) {
 	mouth := LoadImage("./res/mouth_" + fmt.Sprint(nm) + ".png")
 	eyes := LoadImage("./res/eyes_" + fmt.Sprint(ne) + ".png")
 	eyebrows := LoadImage("./res/eyebrows_" + fmt.Sprint(neb) + ".png")
-	draw.Draw(img, pencil.Bounds(), pencil, image.Point{0, 0}, draw.Src)
-	draw.Draw(img, mouth.Bounds(), mouth, image.Point{0, 0}, draw.Src)
-	draw.Draw(img, eyes.Bounds(), eyes, image.Point{0, 0}, draw.Src)
+	draw.Draw(img, pencil.Bounds(), pencil, image.Point{0, 0}, draw.Over)
+	draw.Draw(img, mouth.Bounds(), mouth, image.Point{0, 0}, draw.Over)
+	draw.Draw(img, eyes.Bounds(), eyes, image.Point{0, 0}, draw.Over)
 	draw.Draw(img, eyebrows.Bounds(), eyebrows, image.Point{0, 0}, draw.Over)
 	err := png.Encode(c.Writer, img)
 	if err != nil {
