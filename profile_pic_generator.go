@@ -40,6 +40,7 @@ func GenerateProfilePicture(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("entrée fonction")
 }
 
 func Uint8n(n int) uint8 {
