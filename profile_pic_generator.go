@@ -1,11 +1,13 @@
 package api
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +26,16 @@ func RandomImage() *image.RGBA {
 }
 
 func GenerateProfilePicture(c *gin.Context) {
+	img := RandomImage()
+	np, nm, ne, neb := rand.Intn(10)+1, rand.Intn(10)+1, rand.Intn(10)+1, rand.Intn(10)+1
+	pencil := LoadImage("./res/pencil_" + fmt.Sprint(np) + ".png")
+	mouth := LoadImage("./res/mouth_" + fmt.Sprint(nm) + ".png")
+	eyes := LoadImage("./res/eyes_" + fmt.Sprint(ne) + ".png")
+	eyebrows := LoadImage("./res/eyebrows_" + fmt.Sprint(neb) + ".png")
+	draw.Draw(img, pencil.Bounds(), pencil, image.Point{0, 0}, draw.Src)
+	draw.Draw(img, mouth.Bounds(), mouth, image.Point{0, 0}, draw.Src)
+	draw.Draw(img, eyes.Bounds(), eyes, image.Point{0, 0}, draw.Src)
+	draw.Draw(img, eyebrows.Bounds(), eyebrows, image.Point{0, 0}, draw.Src)
 	err := png.Encode(c.Writer, RandomImage())
 	if err != nil {
 		panic(err)
@@ -32,4 +44,17 @@ func GenerateProfilePicture(c *gin.Context) {
 
 func Uint8n(n int) uint8 {
 	return uint8(rand.Intn(n))
+}
+
+func LoadImage(filename string) image.Image {
+	f, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	image, err := png.Decode(f)
+	if err != nil {
+		panic(err)
+	}
+	return image
 }
