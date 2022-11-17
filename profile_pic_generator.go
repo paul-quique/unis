@@ -35,12 +35,11 @@ func GenerateProfilePicture(c *gin.Context) {
 	draw.Draw(img, pencil.Bounds(), pencil, image.Point{0, 0}, draw.Src)
 	draw.Draw(img, mouth.Bounds(), mouth, image.Point{0, 0}, draw.Src)
 	draw.Draw(img, eyes.Bounds(), eyes, image.Point{0, 0}, draw.Src)
-	draw.Draw(img, eyebrows.Bounds(), eyebrows, image.Point{0, 0}, draw.Src)
+	draw.Draw(img, eyebrows.Bounds(), eyebrows, image.Point{0, 0}, draw.Over)
 	err := png.Encode(c.Writer, img)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("entrée fonction")
 }
 
 func Uint8n(n int) uint8 {
