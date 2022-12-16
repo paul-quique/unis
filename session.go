@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	SESSION_TIMEOUT        = 1 * time.Minute
-	INSERT_SESSION         = "INSERT INTO session (id, user_id, expires_at) VALUES (:id, :user_id, :expires_at);"
+	INSERT_SESSION         = "INSERT INTO session (id, user_id, expires_at) VALUES (:id, :user_id, NOW() + interval '60 seconds');"
 	GET_USER_BY_SESSION_ID = "SELECT user_info.* FROM session JOIN user_info ON session.user_id = user_info.id WHERE session.id=$1 AND expires_at >= now();"
 )
 
@@ -29,9 +28,8 @@ type LoginRequest struct {
 
 func NewSessionFromUser(u *User) *Session {
 	return &Session{
-		Id:        uuid.New().String(),
-		UserId:    u.Id,
-		ExpiresAt: time.Now().Add(60 * time.Second),
+		Id:     uuid.New().String(),
+		UserId: u.Id,
 	}
 }
 
@@ -82,5 +80,7 @@ func Auth(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusCreated, s)
+	c.JSON(http.StatusCreated, gin.H{
+		"sessID": s.Id,
+	})
 }

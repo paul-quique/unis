@@ -15,7 +15,7 @@ import (
 const (
 	GET_USER_BY_ID    = "SELECT * FROM user_info WHERE id=$1;"
 	GET_USER_BY_EMAIL = "SELECT * FROM user_info WHERE email=$1;"
-	INSERT_USER       = "INSERT INTO user_info (first_name, last_name, email, salted_hash, points, created_at) VALUES (:first_name, :last_name, :email, :salted_hash, :points, :created_at);"
+	INSERT_USER       = "INSERT INTO user_info (first_name, last_name, email, salted_hash, points, created_at) VALUES (:first_name, :last_name, :email, :salted_hash, :points, NOW());"
 )
 
 type User struct {
@@ -133,7 +133,6 @@ func PostUser(c *gin.Context) {
 		LastName:  req.LastName,
 		Email:     req.Email,
 		Password:  string(hash),
-		CreatedAt: time.Now(),
 		Points:    100,
 	}
 
@@ -146,7 +145,5 @@ func PostUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"createdAt": u.CreatedAt,
-	})
+	c.Status(http.StatusCreated)
 }

@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -91,7 +90,5 @@ func PostProduct(c *gin.Context) {
 		return
 	}
 	//le produit a été créé avec succès
-	c.JSON(http.StatusCreated, gin.H{
-		"createdAt": time.Now(),
-	})
+	c.Status(http.StatusCreated)
 }
