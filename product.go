@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -22,6 +23,7 @@ type Product struct {
 }
 
 type CreateProductRequest struct {
+	SessionID  string `json:"sessID"`
 	Name       string `json:"name" db:"name"`
 	CategoryId int    `json:"categoryId" db:"category_id"`
 	Price      int    `json:"price" db:"price"`
@@ -50,21 +52,20 @@ func (p *Product) CreateInDB(db *sqlx.DB) error {
 }
 
 func PostProduct(c *gin.Context) {
-	sessId := c.Param("sessid")
-	//vérifier que la session n'est pas expirée
-	u, err := LoadUserFromSessionId(sessId, APIDatabase)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "session expired, please re-login and try again",
-		})
-		return
-	}
 	//extraire les paramètres dans un struct pour vérifier qu'ils sont valides
 	pr := &CreateProductRequest{}
-	err = c.BindJSON(pr)
+	err := c.BindJSON(pr)
 	if err != nil || !pr.IsValid() {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "product name must be 4 to 32 chars long, price must be positive, category id must exist",
+		})
+		return
+	}
+	//vérifier que la session n'est pas expirée
+	u, err := LoadUserFromSessionId(pr.SessionID, APIDatabase)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "session expired, please re-login and try again",
 		})
 		return
 	}
@@ -83,4 +84,8 @@ func PostProduct(c *gin.Context) {
 		})
 		return
 	}
+	//le produit a été créé avec succès
+	c.JSON(http.StatusCreated, gin.H{
+		"createdAt": time.Now(),
+	})
 }
