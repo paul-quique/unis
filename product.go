@@ -171,7 +171,7 @@ func DeleteProduct(c *gin.Context) {
 		return
 	}
 	//supprimer le produit dans le cas ou l'auteur de la requête est bien le propriétaire du produit
-	_, err = APIDatabase.NamedExec(DELETE_PRODUCT_BY_ID, p.Id)
+	_, err = APIDatabase.NamedExec(DELETE_PRODUCT_BY_ID, p)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error, please try again later",
