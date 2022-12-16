@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -10,6 +11,7 @@ import (
 const (
 	MaxProductNameLength = 45
 	MinProductNameLength = 2
+	GET_PRODUCT_BY_ID    = "SELECT * FROM product WHERE id=$1;"
 	INSERT_PRODUCT       = "INSERT INTO product (name, category_id, price, user_id) VALUES (:name, :category_id, :price, :user_id);"
 )
 
@@ -45,9 +47,41 @@ func (p *CreateProductRequest) IsValid() string {
 	}
 	return "ok"
 }
+
 func (p *Product) CreateInDB(db *sqlx.DB) error {
 	_, err := db.NamedExec(INSERT_PRODUCT, p)
 	return err
+}
+
+func LoadProductFromId(db *sqlx.DB, id int) (*Product, error) {
+	u := &Product{}
+	err := db.Get(u, GET_PRODUCT_BY_ID, id)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func GetProduct(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "product id should be an integer",
+		})
+		return
+	}
+
+	p, err := LoadProductFromId(APIDatabase, id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "no product matches the given id",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, p)
 }
 
 func PostProduct(c *gin.Context) {
