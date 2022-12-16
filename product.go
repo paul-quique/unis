@@ -29,22 +29,22 @@ type CreateProductRequest struct {
 	Price      int    `json:"price" db:"price"`
 }
 
-func (p *CreateProductRequest) IsValid() bool {
+func (p *CreateProductRequest) IsValid() string {
 	//vérifier que le nom a entre 4 et 32 caractères
 	l := len(p.Name)
 	if !(l >= 4 && l <= 32) {
-		return false
+		return "name length must be between 4 and 32 chars"
 	}
 	//vérifier que la catégorie spécifiée existe
 	_, err := LoadCategoryFromId(APIDatabase, p.CategoryId)
 	if err != nil {
-		return false
+		return "provided category id doesn't exist"
 	}
 	//vérifier que le prix n'est pas nul ou négatif
 	if p.Price <= 0 {
-		return false
+		return "price must be positive"
 	}
-	return true
+	return "ok"
 }
 func (p *Product) CreateInDB(db *sqlx.DB) error {
 	_, err := db.NamedExec(INSERT_PRODUCT, p)
@@ -55,9 +55,15 @@ func PostProduct(c *gin.Context) {
 	//extraire les paramètres dans un struct pour vérifier qu'ils sont valides
 	pr := &CreateProductRequest{}
 	err := c.BindJSON(pr)
-	if err != nil || !pr.IsValid() {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "product name must be 4 to 32 chars long, price must be positive, category id must exist",
+			"error": "cannot bind json, please check the request is valid",
+		})
+		return
+	}
+	if m := pr.IsValid(); m != "ok" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": m,
 		})
 		return
 	}
