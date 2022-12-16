@@ -13,7 +13,7 @@ import (
 const (
 	SESSION_TIMEOUT        = 1 * time.Minute
 	INSERT_SESSION         = "INSERT INTO session (id, user_id, expires_at) VALUES (:id, :user_id, :expires_at);"
-	GET_USER_BY_SESSION_ID = "SELECT user_info.* FROM session JOIN user_info ON session.user_id = user_info.id WHERE session.id=$1 AND expires_at <= now();"
+	GET_USER_BY_SESSION_ID = "SELECT user_info.* FROM session JOIN user_info ON session.user_id = user_info.id WHERE session.id=$1 AND expires_at >= now();"
 )
 
 type Session struct {
