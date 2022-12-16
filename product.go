@@ -12,6 +12,7 @@ const (
 	MaxProductNameLength = 45
 	MinProductNameLength = 2
 	GET_PRODUCT_BY_ID    = "SELECT * FROM product WHERE id=$1;"
+	DELETE_PRODUCT_BY_ID = "DELETE FROM product WHERE id=$1;"
 	INSERT_PRODUCT       = "INSERT INTO product (name, category_id, price, user_id) VALUES (:name, :category_id, :price, :user_id);"
 )
 
@@ -28,6 +29,10 @@ type CreateProductRequest struct {
 	Name       string `json:"name" db:"name"`
 	CategoryId int    `json:"categoryId" db:"category_id"`
 	Price      int    `json:"price" db:"price"`
+}
+
+type SessionID struct {
+	SessionID string `json:"sessID"`
 }
 
 func (p *CreateProductRequest) IsValid() string {
@@ -125,4 +130,53 @@ func PostProduct(c *gin.Context) {
 	}
 	//le produit a été créé avec succès
 	c.Status(http.StatusCreated)
+}
+
+func DeleteProduct(c *gin.Context) {
+	//vérifier que le produit à supprimer existe
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "product id should be an integer",
+		})
+		return
+	}
+	p, err := LoadProductFromId(APIDatabase, id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "no product matches the given id",
+		})
+		return
+	}
+	//vérifier que le produit appartient bien à l'utilisateur qui le possède
+	s := &SessionID{}
+	err = c.BindJSON(s)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "cannot bind json, please check the request is valid",
+		})
+		return
+	}
+	u, err := LoadUserFromSessionId(s.SessionID, APIDatabase)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "session expired, please re-login and try again",
+		})
+		return
+	}
+	if p.UserId != u.Id {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "you cannot delete someone else's product",
+		})
+		return
+	}
+	//supprimer le produit dans le cas ou l'auteur de la requête est bien le propriétaire du produit
+	_, err = APIDatabase.NamedExec(DELETE_PRODUCT_BY_ID, p.Id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error, please try again later",
+		})
+		return
+	}
+	c.Status(http.StatusOK)
 }
