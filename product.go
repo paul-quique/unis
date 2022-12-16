@@ -12,7 +12,7 @@ const (
 	MaxProductNameLength = 45
 	MinProductNameLength = 2
 	GET_PRODUCT_BY_ID    = "SELECT * FROM product WHERE id=$1;"
-	DELETE_PRODUCT_BY_ID = "DELETE FROM product WHERE id=$1;"
+	DELETE_PRODUCT_BY_ID = "DELETE FROM product WHERE id=:id;"
 	INSERT_PRODUCT       = "INSERT INTO product (name, category_id, price, user_id) VALUES (:name, :category_id, :price, :user_id);"
 )
 
