@@ -1,13 +1,19 @@
 package api
 
 import (
+<<<<<<< Updated upstream
 	"fmt"
+=======
+>>>>>>> Stashed changes
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
 	"math/rand"
+<<<<<<< Updated upstream
 	"os"
+=======
+>>>>>>> Stashed changes
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -26,6 +32,7 @@ func RandomImage() *image.RGBA {
 }
 
 func GenerateProfilePicture(c *gin.Context) {
+<<<<<<< Updated upstream
 	img := RandomImage()
 	np, nm, ne, neb := rand.Intn(10)+1, rand.Intn(10)+1, rand.Intn(10)+1, rand.Intn(10)+1
 	pencil := LoadImage("./res/pencil_" + fmt.Sprint(np) + ".png")
@@ -39,12 +46,18 @@ func GenerateProfilePicture(c *gin.Context) {
 	err := png.Encode(c.Writer, img)
 	if err != nil {
 		fmt.Println(err)
+=======
+	err := png.Encode(c.Writer, RandomImage())
+	if err != nil {
+		panic(err)
+>>>>>>> Stashed changes
 	}
 }
 
 func Uint8n(n int) uint8 {
 	return uint8(rand.Intn(n))
 }
+<<<<<<< Updated upstream
 
 func LoadImage(filename string) image.Image {
 	f, err := os.Open(filename)
@@ -58,3 +71,5 @@ func LoadImage(filename string) image.Image {
 	}
 	return image
 }
+=======
+>>>>>>> Stashed changes
