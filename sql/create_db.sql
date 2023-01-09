@@ -43,3 +43,9 @@ CREATE TABLE session (
     expires_at TIMESTAMP NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user_info (id)
 );
+
+CREATE TABLE image (
+    product_id INTEGER NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES product (id),
+)
