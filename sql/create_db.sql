@@ -50,3 +50,4 @@ CREATE TABLE transaction (
     return_date TIMESTAMP NOT NULL,
     FOREIGN KEY (offer_id) REFERENCES offer (id)
 );
+

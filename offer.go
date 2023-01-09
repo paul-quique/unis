@@ -37,7 +37,8 @@ type CreateOfferRequest struct {
 }
 
 type AcceptOfferRequest struct {
-	OfferId int `json:"offerId" db:"offer_id"`
+	OfferId   int    `json:"offerId" db:"offer_id"`
+	SessionID string `json:"sessID"`
 }
 
 func (o *Offer) CreateInDB(db *sqlx.DB) (err error) {
@@ -124,6 +125,20 @@ func AcceptOffer(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "please specify a valid offer id",
+		})
+		return
+	}
+	//vérifiez que l'auteur de la requête est bien celui qui a reçu l'offre
+	author, err := LoadUserFromSessionId(or.SessionID, APIDatabase)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid session, re-login and try again",
+		})
+		return
+	}
+	if author.Id != o.LenderId {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "you must own this offer to accept it",
 		})
 		return
 	}
