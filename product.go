@@ -22,6 +22,7 @@ type Product struct {
 	CategoryId int    `json:"categoryId" db:"category_id"`
 	Price      int    `json:"price" db:"price"`
 	UserId     int    `json:"userId" db:"user_id"`
+	ImageURL   string `json:"imageURL" db:"image_url"`
 }
 
 type CreateProductRequest struct {
