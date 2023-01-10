@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	ADD_POINTS_TO_USER    = "UPDATE user_info SET points = points + $1 WHERE id = $1"
-	REMOVE_POINTS_TO_USER = "UPDATE user_info SET points = points - $1 WHERE id = $1"
+	ADD_POINTS_TO_USER    = "UPDATE user_info SET points = points + $1 WHERE id = $2"
+	REMOVE_POINTS_TO_USER = "UPDATE user_info SET points = points - $1 WHERE id = $2"
 	INSERT_TRANSACTION    = "INSERT INTO transaction (offer_id, return_date) VALUES (:offer_id, NOW() + interval '7 day');"
 	INSERT_OFFER          = "INSERT INTO offer (borrower_id, lender_id, product_id, created_at, expires_at) VALUES (:borrower_id, :lender_id, :product_id, NOW(), NOW() + interval '7 day');"
 	GET_OFFER_BY_ID       = "SELECT * FROM offer WHERE id=$1;"
