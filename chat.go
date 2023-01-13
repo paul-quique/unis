@@ -61,7 +61,7 @@ func PostMessage(c *gin.Context) {
 	err = m.CreateInDB(APIDatabase)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "database error occured while saving message",
+			"error": err.Error(),
 		})
 		return
 	}
