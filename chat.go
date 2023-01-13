@@ -101,7 +101,7 @@ func PostConversation(c *gin.Context) {
 	}
 	//obtenir les messages demandés
 	messages := []*Message{}
-	err = APIDatabase.Get(messages, SELECT_CONVERSATION, u.Id, cr.SentTo)
+	err = APIDatabase.Get(&messages, SELECT_CONVERSATION, u.Id, cr.SentTo)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
