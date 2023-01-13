@@ -15,7 +15,7 @@ const (
 type Message struct {
 	Id       int       `json:"id" db:"id"`
 	SentFrom int       `json:"sentFrom" db:"sent_from"`
-	SentTo   int       `json:"sentTo" db:"send_to"`
+	SentTo   int       `json:"sentTo" db:"sent_to"`
 	Content  string    `json:"content" db:"content"`
 	SentAt   time.Time `json:"sentAt" db:"sent_at"`
 }
