@@ -51,3 +51,12 @@ CREATE TABLE transaction (
     FOREIGN KEY (offer_id) REFERENCES offer (id)
 );
 
+CREATE TABLE message (
+    id SERIAL PRIMARY KEY,
+    sent_from INTEGER NOT NULL,
+    sent_to INTEGER NOT NULL,
+    sent_at TIMESTAMP NOT NULL,
+    content VARCHAR(1000) NOT NULL,
+    FOREIGN KEY (sent_from) REFERENCES user_info (id),
+    FOREIGN KEY (sent_to) REFERENCES user_info (id)
+);
