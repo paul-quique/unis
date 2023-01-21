@@ -42,6 +42,10 @@ func LoadUserFromSessionId(id string, db *sqlx.DB) (*User, error) {
 	return u, nil
 }
 
+type AuthenticatedRequest struct {
+	SessionId string `json:"sessId"`
+}
+
 func (s *Session) CreateInDB(db *sqlx.DB) error {
 	_, err := db.NamedExec(INSERT_SESSION, s)
 	return err
