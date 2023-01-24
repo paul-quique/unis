@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	SELECT_CONVERSATION = "SELECT * FROM message WHERE (sent_from=$1 AND sent_to=$2) OR (sent_from=$2 AND sent_to=$1) ORDER BY sent_at"
-	INSERT_MESSAGE      = "INSERT INTO message (sent_from, sent_to, sent_at, content) VALUES (:sent_from, :sent_to, NOW(), :content);"
+	SELECT_CONVERSATION  = "SELECT * FROM message WHERE (sent_from=$1 AND sent_to=$2) OR (sent_from=$2 AND sent_to=$1) ORDER BY sent_at"
+	SELECT_CONVERSATIONS = "SELECT DISTINCT sent_to FROM message WHERE sent_from = $1 UNION DISTINCT SELECT DISTINCT sent_from FROM message WHERE sent_to = $1;"
+	INSERT_MESSAGE       = "INSERT INTO message (sent_from, sent_to, sent_at, content) VALUES (:sent_from, :sent_to, NOW(), :content);"
 )
 
 type Message struct {
