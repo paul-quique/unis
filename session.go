@@ -26,6 +26,10 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type AuthenticatedRequest struct {
+	SessionId string `json:"sessId"`
+}
+
 func NewSessionFromUser(u *User) *Session {
 	return &Session{
 		Id:     uuid.New().String(),

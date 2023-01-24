@@ -113,3 +113,35 @@ func PostConversation(c *gin.Context) {
 	//renvoyer les messages de la conversation demandée
 	c.JSON(http.StatusOK, messages)
 }
+
+func PostConversations(c *gin.Context) {
+	//extraire les paramètres dans un struct pour vérifier qu'ils sont valides
+	ar := &AuthenticatedRequest{}
+	err := c.BindJSON(ar)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "cannot bind json, please check the request is valid",
+		})
+		return
+	}
+	//vérifier que la session n'est pas expirée
+	u, err := LoadUserFromSessionId(ar.SessionId, APIDatabase)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "session expired, please re-login and try again",
+		})
+		return
+	}
+	ids := &[]int{}
+	//renvoyer les ids des utilisateurs qui ont une conversation avec
+	//l'auteur de la requête
+	err = APIDatabase.Select(ids, SELECT_CONVERSATIONS, u.Id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, ids)
+}
