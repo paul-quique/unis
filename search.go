@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	GET_SEARCH_RESULTS = "SELECT *, similarity(product.name, $1) AS similarity FROM product ORDER BY similarity DESC LIMIT $2 OFFSET $3;"
+	GET_SEARCH_RESULTS = "SELECT * FROM product ORDER BY similarity(product.name, $1) DESC LIMIT $2 OFFSET $3;"
 )
 
 type SearchProductRequest struct {
