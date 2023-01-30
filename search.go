@@ -41,7 +41,7 @@ func PostSearch(c *gin.Context) {
 	p, err := LoadSearchResults(APIDatabase, sr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "error loading search results, please inform an administrator",
+			"error": err.Error(),
 		})
 		return
 	}
