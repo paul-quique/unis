@@ -38,7 +38,7 @@ type CreateOfferRequest struct {
 
 type AcceptOfferRequest struct {
 	OfferId   int    `json:"offerId" db:"offer_id"`
-	SessionID string `json:"sessID"`
+	SessionID string `json:"sessId"`
 }
 
 func (o *Offer) CreateInDB(db *sqlx.DB) (err error) {

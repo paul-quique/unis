@@ -26,14 +26,14 @@ type Product struct {
 }
 
 type CreateProductRequest struct {
-	SessionID  string `json:"sessID"`
+	SessionID  string `json:"sessId"`
 	Name       string `json:"name" db:"name"`
 	CategoryId int    `json:"categoryId" db:"category_id"`
 	Price      int    `json:"price" db:"price"`
 }
 
 type SessionID struct {
-	SessionID string `json:"sessID"`
+	SessionID string `json:"sessId"`
 }
 
 func (p *CreateProductRequest) IsValid() string {

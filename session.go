@@ -85,7 +85,7 @@ func Auth(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{
-		"sessID": s.Id,
-		"userID": u.Id,
+		"sessId": s.Id,
+		"userId": u.Id,
 	})
 }
