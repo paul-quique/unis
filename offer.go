@@ -15,6 +15,7 @@ const (
 	INSERT_OFFER          = "INSERT INTO offer (borrower_id, lender_id, product_id, created_at, expires_at) VALUES (:borrower_id, :lender_id, :product_id, NOW(), NOW() + interval '7 day');"
 	GET_OFFER_BY_ID       = "SELECT * FROM offer WHERE id=$1;"
 	GET_OFFERS_BY_ID      = "SELECT * FROM offer WHERE borrower_id=$1 OR lender_id=$1 AND id NOT IN (SELECT offer_id FROM transaction);"
+	GET_ACCEPTED_OFFERS   = "SELECT offer.*, return_date FROM transaction INNER JOIN offer ON offer.id = transaction.offer_id WHERE offer.borrower_id=$1 OR offer.lender_id=$1;"
 )
 
 type Offer struct {
@@ -29,6 +30,11 @@ type Offer struct {
 type Transaction struct {
 	Id         int       `json:"id" db:"id"`
 	OfferId    int       `json:"offerId" db:"offer_id"`
+	ReturnDate time.Time `json:"returnDate" db:"return_date"`
+}
+
+type AcceptedOffer struct {
+	Offer      Offer
 	ReturnDate time.Time `json:"returnDate" db:"return_date"`
 }
 
@@ -220,6 +226,41 @@ func GetOffers(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "error while loading offers from database, please contact an administrator",
+		})
+		return
+	}
+
+	//return offers to the client
+	c.JSON(http.StatusOK, o)
+}
+
+func GetAcceptedOffers(c *gin.Context) {
+	//extraire les paramètres dans un struct pour vérifier qu'ils sont valides
+	gor := &GetOffersRequest{}
+	err := c.BindJSON(gor)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "cannot bind json, please check the request is valid",
+		})
+		return
+	}
+
+	//vérifier que la session n'est pas expirée
+	u, err := LoadUserFromSessionId(gor.SessionID, APIDatabase)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "session expired, please re-login and try again",
+		})
+		return
+	}
+
+	//faire une requête pour obtenir l'ensemble des offres effectuées ou
+	//bien reçues par l'utilisateur
+	o := &[]AcceptedOffer{}
+	err = APIDatabase.Select(o, GET_ACCEPTED_OFFERS, u.Id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "error while loading accepted offers from database, please contact an administrator",
 		})
 		return
 	}
