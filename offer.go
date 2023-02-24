@@ -14,6 +14,7 @@ const (
 	INSERT_TRANSACTION    = "INSERT INTO transaction (offer_id, return_date) VALUES (:offer_id, NOW() + interval '7 day');"
 	INSERT_OFFER          = "INSERT INTO offer (borrower_id, lender_id, product_id, created_at, expires_at) VALUES (:borrower_id, :lender_id, :product_id, NOW(), NOW() + interval '7 day');"
 	GET_OFFER_BY_ID       = "SELECT * FROM offer WHERE id=$1;"
+	GET_OFFERS_BY_ID      = "SELECT * FROM offer WHERE borrower_id=$1 OR lender_id=$1 AND id NOT IN (SELECT offer_id FROM transaction);"
 )
 
 type Offer struct {
@@ -38,6 +39,10 @@ type CreateOfferRequest struct {
 
 type AcceptOfferRequest struct {
 	OfferId   int    `json:"offerId" db:"offer_id"`
+	SessionID string `json:"sessId"`
+}
+
+type GetOffersRequest struct {
 	SessionID string `json:"sessId"`
 }
 
@@ -186,4 +191,39 @@ func AcceptOffer(c *gin.Context) {
 		return
 	}
 	c.Status(http.StatusOK)
+}
+
+func GetOffers(c *gin.Context) {
+	//extraire les paramètres dans un struct pour vérifier qu'ils sont valides
+	gor := &GetOffersRequest{}
+	err := c.BindJSON(gor)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "cannot bind json, please check the request is valid",
+		})
+		return
+	}
+
+	//vérifier que la session n'est pas expirée
+	u, err := LoadUserFromSessionId(gor.SessionID, APIDatabase)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "session expired, please re-login and try again",
+		})
+		return
+	}
+
+	//faire une requête pour obtenir l'ensemble des offres effectuées ou
+	//bien reçues par l'utilisateur
+	o := &[]Offer{}
+	err = APIDatabase.Select(o, GET_OFFERS_BY_ID, u.Id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "error while loading offers from database, please contact an administrator",
+		})
+		return
+	}
+
+	//return offers to the client
+	c.JSON(http.StatusOK, o)
 }
