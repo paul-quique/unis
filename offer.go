@@ -260,7 +260,7 @@ func GetAcceptedOffers(c *gin.Context) {
 	err = APIDatabase.Select(o, GET_ACCEPTED_OFFERS, u.Id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "error while loading accepted offers from database, please contact an administrator",
+			"error": err.Error(),
 		})
 		return
 	}
